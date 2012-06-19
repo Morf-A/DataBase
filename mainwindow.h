@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QtGui>
+#include<QtSql>
 #include "deliverydialog.h"
 class MainWindow : public QWidget
 {
@@ -25,13 +26,15 @@ private:
     QTableWidget *ptw;
     QPushButton *ppbAdd;
     QToolBox *ptb;
-
+    QTableView *view;
+    QSqlQueryModel *model;
 
     //Диалоги
     DeliveryDialog* pDevDialog;
 
 public slots:
     void slotAddDelivery();
+    void slotViewClicked();
 
 };
 

@@ -6,9 +6,13 @@ MainWindow::MainWindow(QWidget *pwgt/* =0*/): QWidget(pwgt)
     //RadioButtons
     pgb = new QGroupBox("View:");
     prbItems = new QRadioButton("Items");
+    connect(prbItems,SIGNAL(clicked()),SLOT(slotViewClicked()));
     prbSuppliers = new QRadioButton("Suppliers");
+    connect(prbSuppliers,SIGNAL(clicked()),SLOT(slotViewClicked()));
     prbDeliveries = new QRadioButton("Deliveries");
+    connect(prbDeliveries,SIGNAL(clicked()),SLOT(slotViewClicked()));
     prbWorkers  =new QRadioButton("Workers");
+    connect(prbWorkers,SIGNAL(clicked()),SLOT(slotViewClicked()));
     prbItems->setChecked(true);
     QHBoxLayout * phblGB = new QHBoxLayout;
     phblGB->addWidget(prbItems);
@@ -17,8 +21,10 @@ MainWindow::MainWindow(QWidget *pwgt/* =0*/): QWidget(pwgt)
     phblGB->addWidget(prbWorkers);
     pgb->setLayout(phblGB);
 
-    ptw = new QTableWidget(3,3);
-    ppbAdd = new QPushButton("+ Add...");
+    view = new QTableView;
+    model = new QSqlQueryModel;
+
+    ppbAdd = new QPushButton("+ AddDelivery...");
     connect(ppbAdd,SIGNAL(clicked()),SLOT(slotAddDelivery()));
     ptb = new QToolBox;
 
@@ -27,7 +33,7 @@ MainWindow::MainWindow(QWidget *pwgt/* =0*/): QWidget(pwgt)
     pvbl2 = new QVBoxLayout;
 
     pvbl->addWidget(pgb);
-    phbl->addWidget(ptw);
+    phbl->addWidget(view);
     pvbl2->addWidget(ppbAdd);
     pvbl2->addWidget(ptb);
     phbl->addLayout(pvbl2);
@@ -35,24 +41,10 @@ MainWindow::MainWindow(QWidget *pwgt/* =0*/): QWidget(pwgt)
 
     setLayout(pvbl);
 
-
     ptb->addItem(new QLabel("111"),"Filter");
     ptb->addItem(new QLabel("222"),"Filter2");
     ptb->addItem(new QLabel("333"),"Filter3");
     ptb->addItem(new QLabel("444"),"Filter4");
-
-    QStringList lst;
-    lst<< "First" << "Second" <<"Third";
-    ptw->setHorizontalHeaderLabels(lst);
-    ptw->setVerticalHeaderLabels(lst);
-    QTableWidgetItem *ptwi;
-    for(int i=0; i<3; i++)
-        for(int j=0; j<3; j++)
-        {
-            ptwi = new QTableWidgetItem(QString("%1,%2").arg(i).arg(j));
-            ptw->setItem(i,j,ptwi);
-        }
-
 
     //Соединение с БД
     QSqlDatabase db = QSqlDatabase::addDatabase("QODBC");
@@ -65,6 +57,9 @@ MainWindow::MainWindow(QWidget *pwgt/* =0*/): QWidget(pwgt)
     else
         qDebug()<<"Open database " <<db.lastError();
 
+    slotViewClicked();
+    view->setModel(model);
+
 }
 
 
@@ -75,9 +70,25 @@ void MainWindow::slotAddDelivery()
 
    if(pDevDialog->exec()==QDialog::Accepted)
    {
-       qDebug() <<"OK";
-       //qDebug()<<"Date: " << pDevDialog->GetDate() <<"\n";
-      // qDebug()<<"Supplier : " << pDevDialog->GetSupplier() <<"\n";
+       qDebug()<<"Date: " << pDevDialog->GetDate();
+       qDebug()<<"Supplier : " << pDevDialog->GetSupliers();
    }
    delete pDevDialog;
+}
+
+void MainWindow::slotViewClicked()
+{
+    if(prbSuppliers->isChecked())
+        model->setQuery("SELECT Name, Address, Telephone, Email FROM Suppliers");
+    else if(prbItems->isChecked())
+        model->setQuery("SELECT Items.Name, Items.Quantity,Workers.Name AS NameOfWorker, Suppliers.Name AS NameOfSupplier, Deliveries.Date "
+                        "FROM Items , Deliveries, Suppliers, Workers "
+                        "WHERE Items.id_delivery=Deliveries.id_delivery "
+                        "   AND Deliveries.id_supplier=Suppliers.id_supplier "
+                        "    AND Items.id_Worker=Workers.id_worker;");
+    else if(prbDeliveries->isChecked())
+        model->setQuery("SELECT Deliveries.Date, Suppliers.Name FROM Deliveries, Suppliers WHERE Deliveries.id_supplier=Suppliers.id_supplier");
+    else
+        model->setQuery("SELECT  Name, telephone, email FROM Workers");
+
 }

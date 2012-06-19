@@ -1,6 +1,7 @@
 #ifndef DELIVERYDIALOG_H
 #define DELIVERYDIALOG_H
 #include <QtGui>
+#include <QtSQL>
 #include <QDialog>
 #include "supplierdialog.h"
 #include "itemdialog.h"
@@ -27,6 +28,10 @@ private:
     //Диалоги
     supplierdialog *pSupDialog;
     ItemDialog *pWorkDialog;
+
+    //SQL
+    QSqlQuery *query;
+    QSqlRecord *rec;
 
 public slots:
     void slotAddRow();
