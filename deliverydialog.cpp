@@ -15,6 +15,7 @@ DeliveryDialog::DeliveryDialog(QWidget *parent) :
     pcmdAddRow = new QPushButton("AddRow");
     connect(pcmdAddRow,SIGNAL(clicked()),SLOT(slotAddRow()));
     pcmdItem = new QPushButton("AddItem...");
+    connect(pcmdItem,SIGNAL(clicked()),SLOT(slotAddItem()));
     pcmdSubmit = new QPushButton("Submit");
     connect(pcmdSubmit, SIGNAL(clicked()),SLOT(accept()));
     pcmdCansel = new QPushButton("Cansel");
@@ -64,9 +65,22 @@ void DeliveryDialog::slotAddSupplier()
 
     if(pSupDialog->exec()==QDialog::Accepted)
     {
-       qDebug()<<pSupDialog->GetName() <<"\n";
-       qDebug()<<pSupDialog->GetAddress() <<"\n";
-       qDebug()<<pSupDialog->GetTelephone() <<"\n";
-       qDebug()<<pSupDialog->GetEmail() <<"\n";
+       qDebug()<<pSupDialog->GetName();
+       qDebug()<<pSupDialog->GetAddress();
+       qDebug()<<pSupDialog->GetTelephone();
+       qDebug()<<pSupDialog->GetEmail();
     }
+}
+
+void DeliveryDialog::slotAddItem()
+{
+    pWorkDialog  = new ItemDialog;
+
+    if(pWorkDialog->exec()==QDialog::Accepted)
+    {
+       qDebug()<<pWorkDialog->GetName();
+       qDebug()<<pWorkDialog->GetWorker();
+
+    }
+    delete pWorkDialog;
 }

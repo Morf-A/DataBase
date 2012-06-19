@@ -13,8 +13,12 @@ TEMPLATE = app
 SOURCES += main.cpp\
         mainwindow.cpp \
     deliverydialog.cpp \
-    supplierdialog.cpp
+    supplierdialog.cpp \
+    itemdialog.cpp \
+    workerdialog.cpp
 
 HEADERS  += mainwindow.h \
     deliverydialog.h \
-    supplierdialog.h
+    supplierdialog.h \
+    itemdialog.h \
+    workerdialog.h

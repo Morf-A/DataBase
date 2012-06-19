@@ -3,6 +3,7 @@
 #include <QtGui>
 #include <QDialog>
 #include "supplierdialog.h"
+#include "itemdialog.h"
 
 class DeliveryDialog : public QDialog
 {
@@ -25,10 +26,12 @@ private:
 
     //Диалоги
     supplierdialog *pSupDialog;
+    ItemDialog *pWorkDialog;
 
 public slots:
     void slotAddRow();
     void slotAddSupplier();
+    void slotAddItem();
 };
 
 #endif // DELIVERYDIALOG_H
