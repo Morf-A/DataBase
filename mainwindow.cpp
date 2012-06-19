@@ -18,7 +18,8 @@ MainWindow::MainWindow(QWidget *pwgt/* =0*/): QWidget(pwgt)
     pgb->setLayout(phblGB);
 
     ptw = new QTableWidget(3,3);
-    ppbAdd = new QPushButton("+ Add");
+    ppbAdd = new QPushButton("+ Add...");
+    connect(ppbAdd,SIGNAL(clicked()),SLOT(slotAddDelivery()));
     ptb = new QToolBox;
 
     pvbl = new QVBoxLayout;
@@ -36,6 +37,9 @@ MainWindow::MainWindow(QWidget *pwgt/* =0*/): QWidget(pwgt)
 
 
     ptb->addItem(new QLabel("111"),"Filter");
+    ptb->addItem(new QLabel("222"),"Filter2");
+    ptb->addItem(new QLabel("333"),"Filter3");
+    ptb->addItem(new QLabel("444"),"Filter4");
 
     QStringList lst;
     lst<< "First" << "Second" <<"Third";
@@ -49,4 +53,31 @@ MainWindow::MainWindow(QWidget *pwgt/* =0*/): QWidget(pwgt)
             ptw->setItem(i,j,ptwi);
         }
 
+
+    //Соединение с БД
+    QSqlDatabase db = QSqlDatabase::addDatabase("QODBC");
+    db.setDatabaseName("111");
+    if(!db.open())
+    {
+        qDebug()<<"Can not open database " <<db.lastError();
+        return;
+    }
+    else
+        qDebug()<<"Open database " <<db.lastError();
+
+}
+
+
+
+void MainWindow::slotAddDelivery()
+{
+   pDevDialog = new  DeliveryDialog;
+
+   if(pDevDialog->exec()==QDialog::Accepted)
+   {
+       qDebug() <<"OK";
+       //qDebug()<<"Date: " << pDevDialog->GetDate() <<"\n";
+      // qDebug()<<"Supplier : " << pDevDialog->GetSupplier() <<"\n";
+   }
+   delete pDevDialog;
 }

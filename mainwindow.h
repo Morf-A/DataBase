@@ -2,7 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QtGui>
-
+#include "deliverydialog.h"
 class MainWindow : public QWidget
 {
     Q_OBJECT
@@ -27,6 +27,11 @@ private:
     QToolBox *ptb;
 
 
+    //Диалоги
+    DeliveryDialog* pDevDialog;
+
+public slots:
+    void slotAddDelivery();
 
 };
 
