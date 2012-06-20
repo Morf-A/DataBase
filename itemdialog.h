@@ -15,10 +15,8 @@ public:
 
 private:
     QLabel *plblName;
-    QLabel *plblWorker;
 
     QLineEdit *ptxtName;
-    QLineEdit *ptxtWorker;
 
     QPushButton *pcmdSubmit;
     QPushButton *pcmdCancel;

@@ -109,11 +109,17 @@ void DeliveryDialog::slotAddItem()
 
     if(pItemDialog->exec()==QDialog::Accepted)
     {
-       qDebug()<<pItemDialog->GetName();
-       qDebug()<<pItemDialog->GetWorker();
+        QSqlQuery query;
+        if(!query.exec("INSERT INTO Items (id_delivery,Name,Quantity,id_Worker) VALUES (0, '" +pItemDialog->GetName()+"' , 0, 0);"))
+            qDebug()<<"Unable to make insert operation";
 
+        int rc = pTableItem->rowCount();
+        pTableItem->setRowCount(0);
+        for(int i=0;i<rc;i++)
+            slotAddRow();
     }
     delete pItemDialog;
+
 }
 
 void DeliveryDialog::slotAddWorker()
@@ -132,14 +138,26 @@ void DeliveryDialog::slotAddWorker()
 
         if(pWorkDialog->GetSuperior()=="Head")
         {
-            querySelect.exec("SELECT id_worker FROM Workers");
+            querySelect.exec("SELECT id_worker FROM Workers;");
             querySelect.last();
             int number = querySelect.value(0).toInt();
             query.bindValue(":id_superior", number+1);
         }
+        else
+        {
+            QString str="SELECT id_worker FROM Workers WHERE Name like '"+pWorkDialog->GetSuperior()+"' ;";
+            querySelect.exec(str);
+            qDebug()<<str;
+            QSqlRecord rec = querySelect.record();
+            querySelect.last();
+            int number=querySelect.value(rec.indexOf("id_worker")).toInt();
+            qDebug()<<number;
+            query.bindValue(":id_superior", number);
+        }
 
         if(!query.exec())
             qDebug()<<"Unable to make insert operation";
+
     }
     delete pWorkDialog;
 }
