@@ -20,16 +20,12 @@ private:
     QLineEdit *ptxtName;
     QLineEdit *ptxtWorker;
 
-    QPushButton *pcmdAddWorker;
     QPushButton *pcmdSubmit;
     QPushButton *pcmdCancel;
 
     QGridLayout *ptopLayout;
 
     WorkerDialog *pWorkDialog;
-
-public slots:
-    void slotAddWorker();
 
 };
 

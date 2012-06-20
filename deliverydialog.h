@@ -20,6 +20,7 @@ private:
     QLabel* pLabelDate; QDateEdit *pDateEdit;
     QLabel *pLabelItem;
     QTableWidget *pTableItem; QPushButton *pcmdItem;  QPushButton *pcmdAddRow;
+    QPushButton *pcmdWorker;
     QPushButton *pcmdSubmit; QPushButton *pcmdCansel;
 
     //Размещение
@@ -27,7 +28,8 @@ private:
 
     //Диалоги
     supplierdialog *pSupDialog;
-    ItemDialog *pWorkDialog;
+    ItemDialog *pItemDialog;
+    WorkerDialog *pWorkDialog;
 
     //SQL
     QSqlQuery *query;
@@ -37,6 +39,7 @@ public slots:
     void slotAddRow();
     void slotAddSupplier();
     void slotAddItem();
+    void slotAddWorker();
 };
 
 #endif // DELIVERYDIALOG_H

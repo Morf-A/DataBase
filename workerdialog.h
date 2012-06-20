@@ -10,17 +10,20 @@ class WorkerDialog : public QDialog
 public:
     explicit WorkerDialog(QWidget *parent = 0);
     QString GetName() const;
-    QString GetAddress() const;
+    QString GetTelephone() const;
     QString GetSuperior() const;
+    QString GetEmail() const;
 
 private:
     QLabel *plblName;
-    QLabel *plblAddress;
+    QLabel *plblTelephone;
     QLabel *plblSuperior;
+    QLabel *plblEmail;
 
     QLineEdit *ptxtName;
-    QLineEdit *ptxtAddress;
-    QLineEdit *ptxtSuperior;
+    QLineEdit *ptxtTelephone;
+    QLineEdit *ptxtEmail;
+    QComboBox *pcbxSuperior;
 
     QPushButton *pcmdSubmit;
     QPushButton *pcmdCancel;

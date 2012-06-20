@@ -3,9 +3,9 @@
 DeliveryDialog::DeliveryDialog(QWidget *parent) :
     QDialog(parent)
 {
+    this->resize(550,300);
     query = new QSqlQuery;
     rec = new QSqlRecord ;
-
     //Создание элементв управления
     pLabelS = new QLabel("Supplier:");
 
@@ -21,13 +21,16 @@ DeliveryDialog::DeliveryDialog(QWidget *parent) :
     pLabelDate = new QLabel("Date:");
     pDateEdit  = new QDateEdit(QDate::currentDate());
     pLabelItem = new QLabel("Items:");
-    pTableItem = new QTableWidget(0,2);
+    pTableItem = new QTableWidget(0,3);
 
     pcmdAddRow = new QPushButton("AddRow");
     connect(pcmdAddRow,SIGNAL(clicked()),SLOT(slotAddRow()));
 
     pcmdItem = new QPushButton("AddItem...");
     connect(pcmdItem,SIGNAL(clicked()),SLOT(slotAddItem()));
+
+    pcmdWorker=new QPushButton("AddWorker...");
+    connect(pcmdWorker,SIGNAL(clicked()),SLOT(slotAddWorker()));
 
     pcmdSubmit = new QPushButton("Submit");    
     connect(pcmdSubmit, SIGNAL(clicked()),SLOT(accept()));
@@ -44,15 +47,16 @@ DeliveryDialog::DeliveryDialog(QWidget *parent) :
     ptopLayout->addWidget(pLabelDate,1,0);
     ptopLayout->addWidget(pDateEdit,1,1,1,2);
     ptopLayout->addWidget(pLabelItem,2,0);
-    ptopLayout->addWidget(pTableItem,3,0,3,2);
-    ptopLayout->addWidget(pcmdItem,3,2);
-    ptopLayout->addWidget(pcmdAddRow,5,2);
-    ptopLayout->addWidget(pcmdSubmit,6,1);
-    ptopLayout->addWidget(pcmdCansel,6,2);
+    ptopLayout->addWidget(pTableItem,3,0,4,2);
+    ptopLayout->addWidget(pcmdItem,2,2);
+    ptopLayout->addWidget(pcmdWorker,3,2);
+    ptopLayout->addWidget(pcmdAddRow,6,2);
+    ptopLayout->addWidget(pcmdSubmit,7,1);
+    ptopLayout->addWidget(pcmdCansel,7,2);
     setLayout(ptopLayout);
 
     //Таблица товаров
-    pTableItem->setHorizontalHeaderLabels(QStringList()<<"Name" <<"Quantity");
+    pTableItem->setHorizontalHeaderLabels(QStringList()<<"Name" <<"Quantity" <<"Worker");
     slotAddRow();
     slotAddRow();
 
@@ -67,17 +71,23 @@ void DeliveryDialog::slotAddRow()
     *rec = query->record();
     while(query->next()) pcbx1->addItem(query->value(rec->indexOf("Name")).toString());
 
+    QComboBox *pcbx2 = new QComboBox;
+    if(!query->exec("SELECT Name FROM Workers")) qDebug()<<"Undable to execute query";
+    *rec = query->record();
+    while(query->next()) pcbx2->addItem(query->value(rec->indexOf("Name")).toString());
+
     int rc = pTableItem->rowCount();
     pTableItem->setRowCount(rc+1);
 
     pTableItem->setCellWidget(rc,0,pcbx1);
     pTableItem->setCellWidget(rc,1,new QSpinBox);
+    pTableItem->setCellWidget(rc,2,pcbx2);
+
 }
 
 void DeliveryDialog::slotAddSupplier()
 {
     pSupDialog = new supplierdialog;
-
     if(pSupDialog->exec()==QDialog::Accepted)
     {
        QSqlQuery query;
@@ -90,17 +100,46 @@ void DeliveryDialog::slotAddSupplier()
        if(!query.exec())
            qDebug()<<"Unable to make insert operation";
     }
+    delete pSupDialog;
 }
 
 void DeliveryDialog::slotAddItem()
 {
-    pWorkDialog  = new ItemDialog;
+    pItemDialog  = new ItemDialog;
+
+    if(pItemDialog->exec()==QDialog::Accepted)
+    {
+       qDebug()<<pItemDialog->GetName();
+       qDebug()<<pItemDialog->GetWorker();
+
+    }
+    delete pItemDialog;
+}
+
+void DeliveryDialog::slotAddWorker()
+{
+    pWorkDialog = new WorkerDialog;
 
     if(pWorkDialog->exec()==QDialog::Accepted)
     {
-       qDebug()<<pWorkDialog->GetName();
-       qDebug()<<pWorkDialog->GetWorker();
+        QSqlQuery query;
+        QSqlQuery querySelect;
+        query.prepare("INSERT INTO Workers (id_superior, Telephone, Email, Name) VALUES (:id_superior, :Telephone, :Email, :Name);");
 
+        query.bindValue(":Name", pWorkDialog->GetName());
+        query.bindValue(":Telephone", pWorkDialog->GetTelephone());
+        query.bindValue(":Email", pWorkDialog->GetEmail());
+
+        if(pWorkDialog->GetSuperior()=="Head")
+        {
+            querySelect.exec("SELECT id_worker FROM Workers");
+            querySelect.last();
+            int number = querySelect.value(0).toInt();
+            query.bindValue(":id_superior", number+1);
+        }
+
+        if(!query.exec())
+            qDebug()<<"Unable to make insert operation";
     }
     delete pWorkDialog;
 }
@@ -109,7 +148,6 @@ QString DeliveryDialog::GetSupliers() const
 {
     return pComboBoxS->currentText();
 }
-
 
 QString DeliveryDialog::GetDate() const
 {

@@ -70,8 +70,8 @@ void MainWindow::slotAddDelivery()
 
    if(pDevDialog->exec()==QDialog::Accepted)
    {
-       qDebug()<<"Date: " << pDevDialog->GetDate();
-       qDebug()<<"Supplier : " << pDevDialog->GetSupliers();
+        QSqlQuery query;
+
    }
    delete pDevDialog;
 }

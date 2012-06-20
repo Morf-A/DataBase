@@ -1,15 +1,25 @@
 #include "workerdialog.h"
+#include <QtSQL>
 
 WorkerDialog::WorkerDialog(QWidget *parent) :
     QDialog(parent)
 {
+    QSqlQuery *query = new QSqlQuery;
+    QSqlRecord *rec = new QSqlRecord;
     plblName = new QLabel("Name");
-    plblAddress  = new QLabel("Address");
     plblSuperior  = new QLabel("Superior");
+    plblTelephone = new QLabel("Telephone");
+    plblEmail = new QLabel("Email");
 
     ptxtName = new QLineEdit;
-    ptxtAddress  = new QLineEdit;
-    ptxtSuperior  = new QLineEdit;
+    ptxtTelephone  = new QLineEdit;
+    ptxtEmail = new QLineEdit;
+
+    pcbxSuperior  = new QComboBox;
+    if(!query->exec("SELECT Name FROM Workers")) qDebug()<<"Undable to execute query";
+    *rec = query->record();
+    while(query->next()) pcbxSuperior->addItem(query->value(rec->indexOf("Name")).toString());
+    pcbxSuperior->addItem("Head");
 
     pcmdSubmit = new QPushButton("Submit");
     connect(pcmdSubmit,SIGNAL(clicked()),SLOT(accept()));
@@ -20,9 +30,10 @@ WorkerDialog::WorkerDialog(QWidget *parent) :
     ptopLayout = new QGridLayout;
 
     ptopLayout->addWidget(plblName,0,0); ptopLayout->addWidget(ptxtName,0,1);
-    ptopLayout->addWidget(plblAddress,1,0); ptopLayout->addWidget(ptxtAddress,1,1);
-    ptopLayout->addWidget(plblSuperior,2,0); ptopLayout->addWidget(ptxtSuperior,2,1);
-    ptopLayout->addWidget(pcmdSubmit,3,0); ptopLayout->addWidget(pcmdCancel,3,1);
+    ptopLayout->addWidget(plblTelephone,1,0); ptopLayout->addWidget(ptxtTelephone,1,1);
+    ptopLayout->addWidget(plblEmail,2,0); ptopLayout->addWidget(ptxtEmail,2,1);
+    ptopLayout->addWidget(plblSuperior,3,0); ptopLayout->addWidget(pcbxSuperior,3,1);
+    ptopLayout->addWidget(pcmdSubmit,4,0); ptopLayout->addWidget(pcmdCancel,4,1);
 
     setLayout(ptopLayout);
 }
@@ -31,11 +42,17 @@ QString WorkerDialog::GetName() const
 {
     return ptxtName->text();
 }
-QString WorkerDialog::GetAddress() const
+QString WorkerDialog::GetTelephone() const
 {
-    return ptxtAddress->text();
+    return ptxtTelephone->text();
 }
+
+QString WorkerDialog::GetEmail() const
+{
+    return ptxtEmail->text();
+}
+
 QString WorkerDialog::GetSuperior() const
 {
-    return ptxtSuperior->text();
+    return pcbxSuperior->currentText();
 }

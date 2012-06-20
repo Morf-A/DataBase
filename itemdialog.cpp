@@ -9,8 +9,6 @@ ItemDialog::ItemDialog(QWidget *parent) :
     ptxtName = new QLineEdit;
     ptxtWorker  = new QLineEdit;
 
-    pcmdAddWorker = new QPushButton("AddWorker...");
-    connect(pcmdAddWorker,SIGNAL(clicked()),SLOT(slotAddWorker()));
     pcmdSubmit  = new QPushButton("Submit");
     connect(pcmdSubmit,SIGNAL(clicked()),SLOT(accept()));
     pcmdCancel  = new QPushButton("Cancel");
@@ -20,7 +18,6 @@ ItemDialog::ItemDialog(QWidget *parent) :
 
     ptopLayout->addWidget(plblName,0,0); ptopLayout->addWidget(ptxtName,0,1);
     ptopLayout->addWidget(plblWorker,1,0); ptopLayout->addWidget(ptxtWorker,1,1);
-    ptopLayout->addWidget(pcmdAddWorker,2,0,1,2);
     ptopLayout->addWidget(pcmdSubmit,3,0); ptopLayout->addWidget(pcmdCancel,3,1);
 
     setLayout(ptopLayout);
@@ -28,19 +25,6 @@ ItemDialog::ItemDialog(QWidget *parent) :
 }
 
 
-
-void ItemDialog::slotAddWorker()
-{
-    pWorkDialog = new WorkerDialog;
-
-    if(pWorkDialog->exec()==QDialog::Accepted)
-    {
-        qDebug()<< pWorkDialog->GetName();
-        qDebug()<< pWorkDialog->GetAddress();
-        qDebug()<< pWorkDialog->GetSuperior();
-    }
-    delete pWorkDialog;
-}
 
 QString ItemDialog::GetName() const
 {
