@@ -70,7 +70,91 @@ void MainWindow::slotAddDelivery()
 
    if(pDevDialog->exec()==QDialog::Accepted)
    {
-        QSqlQuery query;
+        //заполняем поставку
+       QSqlQuery query;
+       QSqlQuery querySelect;
+       query.prepare("INSERT INTO Deliveries(id_supplier, Date) VALUES (:id_supplier, :Date);");
+       if(!querySelect.exec("SELECT id_supplier FROM Suppliers WHERE Name like '"+pDevDialog->GetSupliers()+"'; "))
+           qDebug()<<"Unable to make SELECT";
+       querySelect.last();
+       int number = querySelect.value(0).toInt();
+       query.bindValue("id_supplier",number);
+       query.bindValue(":Date",pDevDialog->GetDate());
+       if(!query.exec())
+           qDebug()<<"Unable to make INSERT";
+
+       //Заполняем товары
+       QComboBox* wgtComboItem;
+       QSpinBox * wgtSpinQuantity;
+       QComboBox* wgtComboWorker;
+
+       for(int i=0;i<pDevDialog->pTableItem->rowCount();i++)
+       {
+       wgtComboItem =  (QComboBox*)(pDevDialog->pTableItem->cellWidget(i,0));
+       wgtSpinQuantity =  (QSpinBox*)(pDevDialog->pTableItem->cellWidget(i,1));
+       wgtComboWorker =  (QComboBox*)(pDevDialog->pTableItem->cellWidget(i,2));
+
+       QString strComboItem = wgtComboItem->currentText();
+       QString strSpinQuantity = wgtSpinQuantity->text();
+       QString strComboWorker = wgtComboWorker->currentText();
+
+       if(strSpinQuantity=="0") continue;
+
+           if(!querySelect.exec("SELECT id_item, Name, Quantity FROM Items WHERE Name like '"+strComboItem+"';"))
+               qDebug()<<"Unable to SELECT";
+           querySelect.last();
+           QSqlRecord rec = querySelect.record();
+           int ItemQuantity =querySelect.value(rec.indexOf("Quantity")).toInt();
+
+           if(ItemQuantity==0)
+           {
+
+               query.prepare("UPDATE Items SET "
+                             "id_delivery = :id_delivery , Quantity= :Quantity, id_Worker = :id_Worker "
+                             "WHERE id_item= :id_item ;");
+
+               query.bindValue(":id_item",querySelect.value(rec.indexOf("id_item")).toInt());
+
+               query.bindValue(":Quantity",strSpinQuantity);
+
+               if(!querySelect.exec("SELECT id_delivery FROM Deliveries; "))
+                   qDebug()<<"Unable to make SELECT";
+               querySelect.last();
+               int number = querySelect.value(0).toInt();
+               query.bindValue(":id_delivery",number);
+
+               if(!querySelect.exec("SELECT id_worker FROM Workers WHERE Name like '"+strComboWorker+"' ; "))
+                   qDebug()<<"Unable to make SELECT!";
+               querySelect.last();
+               number = querySelect.value(0).toInt();
+               query.bindValue(":id_Worker",number);
+
+
+               if(!query.exec()) qDebug()<<"Unable to make UPDATE";
+               continue;
+           }
+
+           query.prepare("INSERT INTO Items(id_delivery, Name, Quantity, id_Worker)"
+                         "VALUES (:id_delivery, :Name, :Quantity, :id_Worker);");
+
+
+           if(!querySelect.exec("SELECT id_delivery FROM Deliveries; "))
+               qDebug()<<"Unable to make SELECT";
+           querySelect.last();
+           int number = querySelect.value(0).toInt();
+           query.bindValue(":id_delivery",number);
+           query.bindValue(":Name",strComboItem);
+           query.bindValue(":Quantity",strSpinQuantity);
+
+           if(!querySelect.exec("SELECT id_worker FROM Workers WHERE Name like '"+strComboWorker+"' ; "))
+               qDebug()<<"Unable to make SELECT!";
+           querySelect.last();
+           number = querySelect.value(0).toInt();
+           query.bindValue(":id_Worker",number);
+
+           if(!query.exec()) qDebug() <<"Unable to make INSERT";
+       }
+
 
    }
    delete pDevDialog;
@@ -89,6 +173,8 @@ void MainWindow::slotViewClicked()
     else if(prbDeliveries->isChecked())
         model->setQuery("SELECT Deliveries.Date, Suppliers.Name FROM Deliveries, Suppliers WHERE Deliveries.id_supplier=Suppliers.id_supplier");
     else
-        model->setQuery("SELECT  Name, telephone, email FROM Workers");
+        model->setQuery("SELECT W1.Name, W1.Telephone, W1.Email, W2.Name AS NameOfSuperior "
+                        " FROM Workers W1, Workers W2 "
+                        " WHERE W1.id_superior = W2.id_worker;");
 
 }

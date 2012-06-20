@@ -99,6 +99,8 @@ void DeliveryDialog::slotAddSupplier()
 
        if(!query.exec())
            qDebug()<<"Unable to make insert operation";
+
+      // pComboBoxS->addItem(pSupDialog->GetName());
     }
     delete pSupDialog;
 }
@@ -158,6 +160,10 @@ void DeliveryDialog::slotAddWorker()
         if(!query.exec())
             qDebug()<<"Unable to make insert operation";
 
+        int rc = pTableItem->rowCount();
+        pTableItem->setRowCount(0);
+        for(int i=0;i<rc;i++)
+            slotAddRow();
     }
     delete pWorkDialog;
 }

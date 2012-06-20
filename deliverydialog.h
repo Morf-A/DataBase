@@ -13,13 +13,15 @@ public:
     explicit DeliveryDialog(QWidget *parent = 0);
     QString GetDate() const;
     QString GetSupliers() const;
+    QString GetTableText(int i, int j) const;
+    QTableWidget *pTableItem;
 
 private:
     //Ёлементы управлени€
     QLabel *pLabelS; QComboBox *pComboBoxS; QPushButton*pcmdS;
     QLabel* pLabelDate; QDateEdit *pDateEdit;
     QLabel *pLabelItem;
-    QTableWidget *pTableItem; QPushButton *pcmdItem;  QPushButton *pcmdAddRow;
+    QPushButton *pcmdItem;  QPushButton *pcmdAddRow;
     QPushButton *pcmdWorker;
     QPushButton *pcmdSubmit; QPushButton *pcmdCansel;
 
