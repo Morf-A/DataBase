@@ -2,6 +2,9 @@
 #include <QtSql>
 MainWindow::MainWindow(QWidget *pwgt/* =0*/): QWidget(pwgt)
 {
+    QTextCodec *utfcodec = QTextCodec::codecForName("Windows-1251");
+    QTextCodec::setCodecForTr(utfcodec);
+    QTextCodec::setCodecForCStrings(utfcodec);
 //Внешний вид
     //RadioButtons
     pgb = new QGroupBox("View:");
@@ -41,10 +44,13 @@ MainWindow::MainWindow(QWidget *pwgt/* =0*/): QWidget(pwgt)
 
     setLayout(pvbl);
 
-    ptb->addItem(new QLabel("111"),"Filter");
-    ptb->addItem(new QLabel("222"),"Filter2");
-    ptb->addItem(new QLabel("333"),"Filter3");
-    ptb->addItem(new QLabel("444"),"Filter4");
+
+    WidgetImplementation();
+    ptb->addItem(wgt1,"Запрос №1");
+    ptb->addItem(wgt2,"Запрос №2");
+    ptb->addItem(wgt3,"Запрос №3");
+    ptb->addItem(wgt4,"Запрос №4");
+    ptb->addItem(wgt5,"Запрос №5");
 
     //Соединение с БД
     QSqlDatabase db = QSqlDatabase::addDatabase("QODBC");
@@ -178,3 +184,57 @@ void MainWindow::slotViewClicked()
                         " WHERE W1.id_superior = W2.id_worker;");
 
 }
+
+
+void MainWindow::WidgetImplementation()
+{
+    //N1
+    wgt1 = new QWidget;
+    plblwgt1 = new QLabel("Составной многотабличный запрос с параметром,\n"
+                          "включающий соединение таблиц и CASE-выражение");
+    pcmdwgt1 = new QPushButton("Запрос");
+    QGridLayout* playwgt1 = new QGridLayout;
+    playwgt1->addWidget(plblwgt1,0,0);
+    playwgt1->addWidget(pcmdwgt1,1,0);
+    wgt1->setLayout(playwgt1);
+
+    //N2
+    wgt2 = new QWidget;
+    plblwgt2 = new QLabel("На основе обновляющего представления (многотабличного VIEW),\n "
+                          "в котором критерий упорядоченности задает пользователь при выполнении;");
+    pcmdwgt2 = new QPushButton("Запрос");
+    QGridLayout* playwgt2 = new QGridLayout;
+    playwgt2->addWidget(plblwgt2,0,0);
+    playwgt2->addWidget(pcmdwgt2,1,0);
+    wgt2->setLayout(playwgt2);
+
+    //N3
+    wgt3 = new QWidget;
+    plblwgt3 = new QLabel("Запрос, содержащий коррелированные и некоррелированные подзапросы\n "
+                          "в разделах SELECT, FROM и WHERE (в каждом хотя бы по одному)");
+    pcmdwgt3 = new QPushButton("Запрос");
+    QGridLayout* playwgt3 = new QGridLayout;
+    playwgt3->addWidget(plblwgt3,0,0);
+    playwgt3->addWidget(pcmdwgt3,1,0);
+    wgt3->setLayout(playwgt3);
+
+    //N4
+    wgt4 = new QWidget;
+    plblwgt4 = new QLabel("Многотабличный запрос, содержащий группировку записей,\n "
+                          "агрегативные функции и параметр, используемый в разделе HAVING");
+    pcmdwgt4 = new QPushButton("Запрос");
+    QGridLayout* playwgt4 = new QGridLayout;
+    playwgt4->addWidget(plblwgt4,0,0);
+    playwgt4->addWidget(pcmdwgt4,1,0);
+    wgt4->setLayout(playwgt4);
+
+    //N5
+    wgt5 = new QWidget;
+    plblwgt5 = new QLabel("Запрос, содержащий предикат ANY, SOME  или ALL");
+    pcmdwgt5 = new QPushButton("Запрос");
+    QGridLayout* playwgt5 = new QGridLayout;
+    playwgt5->addWidget(plblwgt5,0,0);
+    playwgt5->addWidget(pcmdwgt5,1,0);
+    wgt5->setLayout(playwgt5);
+}
+

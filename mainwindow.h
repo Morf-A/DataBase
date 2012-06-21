@@ -10,6 +10,7 @@ class MainWindow : public QWidget
     
 public:
     MainWindow(QWidget *pwgt = 0);
+   void WidgetImplementation();
 private:
     //Размещение
     QVBoxLayout *pvbl;
@@ -28,6 +29,14 @@ private:
     QToolBox *ptb;
     QTableView *view;
     QSqlQueryModel *model;
+
+    //Виджеты
+
+    QWidget* wgt1; QLabel* plblwgt1;  QPushButton* pcmdwgt1;
+    QWidget* wgt2; QLabel* plblwgt2;  QPushButton* pcmdwgt2;
+    QWidget* wgt3; QLabel* plblwgt3;  QPushButton* pcmdwgt3;
+    QWidget* wgt4; QLabel* plblwgt4;  QPushButton* pcmdwgt4;
+    QWidget* wgt5; QLabel* plblwgt5;  QPushButton* pcmdwgt5;
 
     //Диалоги
     DeliveryDialog* pDevDialog;
