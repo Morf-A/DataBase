@@ -67,7 +67,7 @@ void DeliveryDialog::slotAddRow()
 {
     QComboBox *pcbx1 = new QComboBox;
 
-    if(!query->exec("SELECT Name FROM Items")) qDebug()<<"Undable to execute query";
+    if(!query->exec("SELECT DISTINCT Name FROM Items")) qDebug()<<"Undable to execute query";
     *rec = query->record();
     while(query->next()) pcbx1->addItem(query->value(rec->indexOf("Name")).toString());
 
