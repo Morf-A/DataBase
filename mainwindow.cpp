@@ -203,7 +203,26 @@ void MainWindow::slotN2Clicked()
 
 void MainWindow::slotN3Clicked()
 {
-
+    if(prbwgt31->isChecked())
+    {
+        model->setQuery("SELECT dl.Date, "
+                        "(SELECT sp.Telephone FROM Suppliers sp WHERE sp.id_supplier=dl.id_supplier ) AS NameOfSupplier "
+                        "FROM Deliveries dl");
+    }
+    else if(prbwgt32->isChecked())
+    {
+        model->setQuery("SELECT tbl1.Name, tbl1.QuantityOfItem, tbl2.QuantityOfDelivery "
+                        "FROM (SELECT  Items.Name, SUM(Items.Quantity) AS QuantityOfItem "
+                        "FROM Items GROUP BY Name) tbl1, "
+                        "(SELECT  Items.Name, COUNT(*) AS QuantityOfDelivery FROM Items "
+                        "GROUP BY Name) tbl2 "
+                        "WHERE tbl1.Name=tbl2.Name");
+    }
+    else if(prbwgt33->isChecked())
+    {
+        model->setQuery("SELECT Name FROM Workers "
+                        "WHERE id_Worker IN (SELECT id_worker WHERE Workers.id_worker=Workers.id_superior);");
+    }
 }
 
 void MainWindow::slotN4Clicked()
@@ -268,16 +287,17 @@ void MainWindow::WidgetImplementation()
     plblwgt3 = new QLabel("Запрос, содержащий коррелированные и некоррелированные подзапросы\n "
                           "в разделах SELECT, FROM и WHERE (в каждом хотя бы по одному)");
     pcmdwgt3 = new QPushButton("Запрос");
+    connect(pcmdwgt3,SIGNAL(clicked()),SLOT(slotN3Clicked()));
     prbwgt31 = new QRadioButton("SELECT");
     prbwgt32 = new QRadioButton("FROM");
     prbwgt33 = new QRadioButton("WHERE");
     QGridLayout* playwgt3 = new QGridLayout;
     playwgt3->addWidget(plblwgt3,0,0);
-    playwgt3->addWidget(new QLabel("Запрос 1"),1,0);
+    playwgt3->addWidget(new QLabel("Дата поставки и телефон поставщика"),1,0);
     playwgt3->addWidget(prbwgt31,1,1);
-    playwgt3->addWidget(new QLabel("Запрос 2"),2,0);
+    playwgt3->addWidget(new QLabel("Для каждого вида товара его колличество и колличество его поставок"),2,0);
     playwgt3->addWidget(prbwgt32,2,1);
-    playwgt3->addWidget(new QLabel("Запрос 3"),3,0);
+    playwgt3->addWidget(new QLabel("Работники высшего уровня (коррелированный )"),3,0);
     playwgt3->addWidget(prbwgt33,3,1);
     playwgt3->addWidget(pcmdwgt3,4,0,1,3);
     wgt3->setLayout(playwgt3);
